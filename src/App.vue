@@ -6,6 +6,9 @@
     </div>
     <router-view/>
   </div>
+
+  <!-- CONTROL COMPLEXITY SETTING IN OPTIONS PANEL, SWITCHES FRACTIONS ON ALL BUTTONS -->
+  <!-- ONLY DIFFERENCE IS VOLUME, MAY NEED ITS OWN SETTING -->
 </template>
 
 <style lang="scss">

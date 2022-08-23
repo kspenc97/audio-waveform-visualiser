@@ -1,18 +1,35 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div class="hello">
+    <AudioToolkit>
+    </AudioToolkit>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+import AudioToolkit from '../views/AudioToolkit.vue'
 
 export default {
-  name: 'Home',
+  name: 'HelloWorld',
+
   components: {
-    HelloWorld
+    AudioToolkit
+  },
+
+  methods: {
+    fileCatch(target, file) {
+      console.log(target)
+      console.log(file)
+      console.log(this.params)
+    },
+    panelCatch(panelEvent) {
+      console.log(panelEvent)
+    }
   }
 }
 </script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped lang="scss">
+
+</style>
+
