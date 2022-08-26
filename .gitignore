@@ -5,6 +5,7 @@ node_modules
 #audio asset
 ZHU_-_Good_Life_Audio.mp3
 
+/public/assets
 # local env files
 .env.local
 .env.*.local
@@ -23,3 +24,7 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+
+#research
+https://juce.com/ - framework site
+https://www.youtube.com/watch?v=i_Iq4_Kd7Rc  - building a juce plugin long tutorial

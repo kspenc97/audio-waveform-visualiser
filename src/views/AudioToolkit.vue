@@ -1,10 +1,16 @@
 <template>
   <div class="audioToolkitHero">
     <form @submit="panelCatch($event)">
-  
     <p class='clipName'>file name here</p>
     <input type="file" @change="fileCatch($event, $event.target.files)"  />
-    <button @click="fetchLocalFile">play local file</button>
+    <button @click="playAudioStep1">play local file</button>
+    <button @click="tutorial1">frequency tutorial 1</button>
+    <button @click="oscInit">start osc</button>
+    <button @click="oscStop">stop osc</button>
+    <input @input="sliderChange($event)" ref='testImp' type="range" min="220" max="880" value="440" step="0.01"/>
+    <button @click="oscType">osc Type</button>
+    <button @click="oscSound">osc Sound</button>
+
     <!-- Wishlist - dynamically load button settings template based on inbound prop -->
     <!-- Wishlist 5 levels - by 20% -->
     <div class='buttonAndSettings'>
@@ -57,13 +63,25 @@
 import EffectButtonStandard from '../effect_buttons/EffectButtonStandard.vue'
 import {mapState, mapActions} from 'vuex';
 
+import song1 from '../../public/assets/ZHU_-_Good_Life_Audio.mp3'
+import song2 from '../../public/assets/8-15-2022-goldclothes.wav'
+
+
+import vocals1 from '../../public/assets/FREE VOCAL LOOP SAMPLES.mp3'
+import vocals2 from '../../public/assets/FREE VOCAL SAMPLES.mp3'
+import vocals3 from '../../public/assets/VOX SAMPLE PACK (+30 Royalty Free) vocal samples _ vol_9.mp3'
+
+
 export default {
   name: 'AudioToolkit',
 data(){
   return{
     clipSettings: { default: {} } ,
     privateKey:  { default: 0},
-    audio: { default: {}}
+    audio: { default: {}},
+    testOsc: null,
+    testCtx: null,
+    oscRunning: false,
   }
 },
   computed:{
@@ -86,28 +104,143 @@ data(){
       
       
       
-  
+  this.fetchLocalFile(file)
     },
-    fetchLocalFile() {
+    playAudioStep1() {
       const ctx = new AudioContext();
-      let audio
 
-      fetch("../assets/ZHU_-_Good_Life_Audio.mp3")
-        .then(data => data.arrayBuffer())
+      fetch(song2)
+        .then(response => response.arrayBuffer())
         .then(arrayBuffer => ctx.decodeAudioData(arrayBuffer))
-        .then(decodedAudio => {
-          audio = decodedAudio;
-        })
+        .then(decodedAudio => this.audioBuffer = decodedAudio)
+        .then(()=> this.playAudioStep2(this.audioBuffer, ctx))
+    },
+    playAudioStep2(audioBuffer, context){
+      const playSound = context.createBufferSource()
+        playSound.buffer = audioBuffer;
+        playSound.connect(context.destination)
+        playSound.start()
+    },
+    //Tutorial About Frequency
+    tutorial1(){
+      const ctx = new AudioContext();
+
+      const osc = ctx.createOscillator();
+
+      osc.connect(ctx.destination)
+      // There are params in this such as frequency that can be manipulated
+      console.log(osc)
+      // Setting value here, could have something that moves value around?
+    
+      // plays a sine wave right away for one second
+      osc.start(0);
+      setTimeout(()=>{
+      osc.frequency.value / 2
+
+      },200)
+      osc.stop(1);
+      // Default value is 440htz, 440 is a reference pitch
+      //An octive is doubling or halfing the frequency
 
 
-        const playSound = ctx.createBufferSource()
-        playSound.buffer = audio;
-        playSound.connect(ctx.destination)
-        playSound.start(ctx.currentTime)
+      console.log(this.$refs.testImp)
+    },
+    oscStart(){
+      const ctx = new AudioContext();
+
+      this.testOsc = ctx.createOscillator();
+      this.testCtx = ctx
+
+      this.testOsc.connect(ctx.destination)
+
+
+    },
+    oscInit(){
+      this.testOsc.start(0)
+    },
+    oscStop(){
+      this.testOsc.stop();
+    },
+    sliderChange(e){
+      
+      this.testOsc.frequency.value = e.target.value
+      
+    },
+    changeOscillator(oscillator, val){
+
+      oscillator.frequency.value = val
+    },
+    oscType(){
+      // The 4 oscillator types
+      // representation of the voltage shape
+      // In the base note of a C, there are overtones blended in with the exact pitch
+      // sine wave is fundemental with no overtones     
+      this.testOsc.type = 'sine';
+      this.testOsc.type = 'square';
+      this.testOsc.type = 'triangle';
+      this.testOsc.type = 'sawtooth';
+
+      
+      this.testOsc.start();
+
+      setTimeout(() => {
+        this.testOsc.stop()
+      }, 2000)
+
+    },
+    oscStart2(){
+      //NO AUTO CONNECT TO SPEAKER like in oscStart
+      const ctx = new AudioContext();
+
+      this.testOsc = ctx.createOscillator();
+      this.testCtx = ctx
+
+      //this.testOsc.connect(ctx.destination)
+
+
+    },
+    oscSound() {
+      // 8 DIFFERENT FILTERS IN WEB AUDIO API
+
+      // AN OSCILLATOR IS A VOLTAGE SHAPTER
+      //this.testOsc.start();
+      // Nodes in the line of the audio are objects
+
+      this.testOsc.type = 'sawtooth';
+
+      //using ctx object in component state to get a createGain() node
+      var gainNode = this.testCtx.createGain()
+
+      var biquadNode = this.testCtx.createBiquadFilter();
+
+
+      biquadNode.detune.value = .8;
+      biquadNode.frequency.value = 410;
+      // Q is the peak right by where the filter is at on the center of the eq
+      // in a bandpass it controls the width
+      biquadNode.Q.value = 10
+      biquadNode.type = 'bandpass'
+      gainNode.gain.value = .05;
+      console.log(biquadNode)
+
+      this.testOsc.connect(biquadNode)
+      
+      biquadNode.connect(gainNode)
+      gainNode.connect(this.testCtx.destination)
+
+      
+      this.testOsc.start()
+
+      setTimeout(() => {
+        this.testOsc.stop()
+      }, 2000)
+
+      
+
     },
     playWhiteNoise() {
       //Step 1
-      const audioContext = new AudioContext();
+      const audioContext = new ( window.AudioContext || window.webkitAudioContext)();
       // Step 2
       const buffer = audioContext.createBuffer(
         1,
@@ -177,6 +310,7 @@ data(){
   },
 
   created() {
+    this.oscStart2();
         Object.assign(this.clipSettings, this.clipsAndOptions[0])
   }
 }
