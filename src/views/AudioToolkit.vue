@@ -11,6 +11,22 @@
     <button @click="oscType">osc Type</button>
     <button @click="oscSound">osc Sound</button>
 
+    <!-- STEP 1, SELECT PRE-EXISITNG AUDIO FILE -->
+    <select 
+              ref="file-select-ref"
+              @change.prevent="fileChange" 
+            >
+            <option value="placeholder" disabled selected>Select your audio clip</option>
+            <option v-for="file in availableFilesArr" :key="file.id" :value="file.url">
+           {{file.name}}
+      </option>
+    </select>
+    <p>Loaded Audio: {{this.selectedAudioFile}}</p>
+
+
+    <!-- Step x -->
+    <button @click="playMainTrack">Play</button>
+    <button @click="pauseMainTrack">Pause</button>
     <!-- Wishlist - dynamically load button settings template based on inbound prop -->
     <!-- Wishlist 5 levels - by 20% -->
     <div class='buttonAndSettings'>
@@ -82,6 +98,37 @@ data(){
     testOsc: null,
     testCtx: null,
     oscRunning: false,
+    //Currently loaded audio file, for select value
+    selectedAudioFile: null,
+    //
+    availableFilesArr: [
+      {
+        name:'song1',
+        url:'song1-url',
+        id: 1,
+      },
+      {
+        name: 'song2',
+        url:'song2-url',
+        id: 2,
+      },
+      {
+        name:'vocals1',
+        url:'vocals1-url',
+        id: 3,
+      },
+      {
+        name: 'vaudioBufferocals2',
+        url:'vocals2-url',
+        id: 4,
+      },
+      {
+        name:'vocals3',
+        url:'vocals3-url',
+        id: 5,
+      },      
+                      ]
+
   }
 },
   computed:{
@@ -98,6 +145,11 @@ data(){
     ...mapActions([
       'updateAClip',
     ]),
+    fileChange(){
+      //this.$refs.file-select-ref
+      //or
+      console.log(this.$refs["file-select-ref"].value)
+    },
     fileCatch(target, file) {
       console.log(target)
       console.log(file)

@@ -15,16 +15,6 @@ export default {
     AudioToolkit
   },
 
-  methods: {
-    fileCatch(target, file) {
-      console.log(target)
-      console.log(file)
-      console.log(this.params)
-    },
-    panelCatch(panelEvent) {
-      console.log(panelEvent)
-    }
-  }
 }
 </script>
 
